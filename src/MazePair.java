@@ -7,6 +7,8 @@ import java.util.*;
 public class MazePair {
 
     private int shortestPath;
+    ArrayList<Integer> runnerDistances;
+    ArrayList<Integer> ballDistances;
 
     public int shortestPath(char[][] maze) {
         int height = maze.length;
@@ -15,8 +17,8 @@ public class MazePair {
         LinkedList<Vertex> queue = new LinkedList<>();
         Vertex[][] graph = new Vertex[height][width];
 
-        ArrayList<Integer> runnerDistances = new ArrayList<>();
-        ArrayList<Integer> ballDistances = new ArrayList<>();
+        runnerDistances = new ArrayList<>();
+        ballDistances = new ArrayList<>();
 
         shortestPath = Integer.MAX_VALUE;
 
@@ -31,9 +33,11 @@ public class MazePair {
 
         //Initialize source
         graph[1][1] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1], 1, 1);
+        graph[1][1].setDist(0);
 
         //Add s to que
         queue.add(graph[1][1]);
+
 
         //FirstInFirstOutQue
         while(!queue.isEmpty()) {
@@ -60,7 +64,16 @@ public class MazePair {
 
         printGraph(height, width, graph);
 
-        //Binary search to find closest player and ball
+        /*
+        //Find closest ball and runner
+        for(Integer r : runnerDistances) {
+            for(Integer b : ballDistances) {
+                if(shortestPath > Math.abs(r - b)) {
+                    shortestPath = Math.abs(r - b);
+                }
+            }
+        }
+        */
 
         return shortestPath;
     }
@@ -71,9 +84,10 @@ public class MazePair {
 
             //Sets the distance correctly
             if(v.getCell() == 'r') {
-                v.setDist(0);
+                v.setDist(u.getDist() + 1);
                 v.setPi(u);
                 queue.add(v); //Enque
+                runnerDistances.add(v.getDist());
             }
             else if(v.getCell() == 'o') {
                 v.setDist(Integer.MAX_VALUE);
@@ -87,13 +101,14 @@ public class MazePair {
             }
             else if(v.getCell() == 'b') {
                 if(u.getDist() != Integer.MAX_VALUE) {
-                    v.setDist(u.getDist()+1);
+                    v.setDist(u.getDist() + 1);
                 }
                 if(shortestPath > v.getDist()) {
                     shortestPath = v.getDist();
                 }
                 v.setPi(u);
                 queue.add(v); //Enque
+                ballDistances.add(v.getDist());
             }
 
 
