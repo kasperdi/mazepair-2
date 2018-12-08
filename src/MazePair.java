@@ -1,9 +1,13 @@
 // Version: 2017120401
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MazePair {
+
+    private int shortestPath;
+
     public int shortestPath(char[][] maze) {
         int height = maze.length;
         int width = maze[0].length;
@@ -11,37 +15,101 @@ public class MazePair {
         LinkedList<Vertex> queue = new LinkedList<>();
         Vertex[][] graph = new Vertex[height][width];
 
+        ArrayList<Integer> runnerDistances = new ArrayList<>();
+        ArrayList<Integer> ballDistances = new ArrayList<>();
+
+        shortestPath = Integer.MAX_VALUE;
+
         // Implement your path-finding algorithm here!
 
         //Initialize
         for(int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                graph[i][j] = new Vertex("White", Integer.MAX_VALUE, null, maze[i][j]);
+                graph[i][j] = new Vertex("White", Integer.MAX_VALUE, null, maze[i][j], j, i);
             }
         }
 
         //Initialize source
-        Vertex s = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1]);
+        graph[1][1] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1], 1, 1);
 
         //Add s to que
-        queue.addLast(s);
+        queue.add(graph[1][1]);
 
         //FirstInFirstOutQue
         while(!queue.isEmpty()) {
-            Vertex u = queue.removeFirst();
-            Vertex v = new Vertex(null, 0, null, u.getCell());
-                if(v.getColor().equals("White")) {
-                    v.setColor("Gray");
-                    v.setDist(u.getDist() + 1);
-                    v.setPi(u);
-                    queue.addLast(v); //Enque
-                }
+            Vertex u = queue.poll();
+
+            if(u.getYCord()-1 >= 0) {
+                queue = adjProcess(u, graph[u.getYCord()-1][u.getXCord()], queue);
+            }
+
+            if(u.getYCord()+1 <= height-1) {
+                queue = adjProcess(u, graph[u.getYCord()+1][u.getXCord()], queue);
+            }
+
+            if(u.getXCord()-1 >= 0) {
+                queue = adjProcess(u, graph[u.getYCord()][u.getXCord()-1], queue);
+            }
+
+            if(u.getXCord()+1 <= width-1) {
+                queue = adjProcess(u, graph[u.getYCord()][u.getXCord()+1], queue);
+            }
+
             u.setColor("Black");
         }
 
+        printGraph(height, width, graph);
+
+        //Binary search to find closest player and ball
+
+        return shortestPath;
+    }
+
+    public LinkedList adjProcess(Vertex u, Vertex v, LinkedList queue) {
+        if(v.getColor().equals("White")) {
+            v.setColor("Gray");
+
+            //Sets the distance correctly
+            if(v.getCell() == 'r') {
+                v.setDist(0);
+                v.setPi(u);
+                queue.add(v); //Enque
+            }
+            else if(v.getCell() == 'o') {
+                v.setDist(Integer.MAX_VALUE);
+            }
+            else if(v.getCell() == '.') {
+                if(u.getDist() != Integer.MAX_VALUE) { //Prevents integer overflow
+                    v.setDist(u.getDist() + 1);
+                }
+                v.setPi(u);
+                queue.add(v); //Enque
+            }
+            else if(v.getCell() == 'b') {
+                if(u.getDist() != Integer.MAX_VALUE) {
+                    v.setDist(u.getDist()+1);
+                }
+                if(shortestPath > v.getDist()) {
+                    shortestPath = v.getDist();
+                }
+                v.setPi(u);
+                queue.add(v); //Enque
+            }
 
 
-        return 0;
+        }
+        return queue;
+    }
+
+    public void printGraph(int height, int width, Vertex[][] graph) {
+        System.out.println();
+        for(int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                System.out.format("%12s", "[" + graph[i][j].getDist() + "]");
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 
     public static void testAll() {
