@@ -36,7 +36,7 @@ public class MazePair {
 
             }
         }
-        //Replace the part below "Initialize multiple sources" with the following code if there is only one source.
+        //Replace the part below "Initialize multiple sources" with the following code if (1,1) is the only source.
         /*
         graph[1][1] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1], 1, 1);
         graph[1][1].setDist(0);
