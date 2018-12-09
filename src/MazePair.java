@@ -7,8 +7,6 @@ import java.util.*;
 public class MazePair {
 
     private int shortestPath;
-    ArrayList<Integer> runnerDistances;
-    ArrayList<Integer> ballDistances;
 
     public int shortestPath(char[][] maze) {
         int height = maze.length;
@@ -16,9 +14,6 @@ public class MazePair {
 
         LinkedList<Vertex> queue = new LinkedList<>();
         Vertex[][] graph = new Vertex[height][width];
-
-        runnerDistances = new ArrayList<>();
-        ballDistances = new ArrayList<>();
 
         shortestPath = Integer.MAX_VALUE;
 
@@ -32,12 +27,26 @@ public class MazePair {
         }
 
         //Initialize source
+        printGraph(height, width, graph);
+
+        for(int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if(graph[i][j].getCell() == 'r') {
+                    graph[i][j] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[i][j], j, i);
+                    graph[i][j].setDist(0);
+                    queue.add(graph[i][j]);
+                }
+
+            }
+        }
+        //Replace the part below "Initialize source" with the following code if there is only one source.
+        /*
         graph[1][1] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1], 1, 1);
         graph[1][1].setDist(0);
 
         //Add s to que
         queue.add(graph[1][1]);
-
+        */
 
         //FirstInFirstOutQue
         while(!queue.isEmpty()) {
@@ -62,18 +71,8 @@ public class MazePair {
             u.setColor("Black");
         }
 
-        printGraph(height, width, graph);
-
-        /*
-        //Find closest ball and runner
-        for(Integer r : runnerDistances) {
-            for(Integer b : ballDistances) {
-                if(shortestPath > Math.abs(r - b)) {
-                    shortestPath = Math.abs(r - b);
-                }
-            }
-        }
-        */
+        //Uncomment to print solution.
+        //printGraph(height, width, graph);
 
         return shortestPath;
     }
@@ -87,7 +86,6 @@ public class MazePair {
                 v.setDist(u.getDist() + 1);
                 v.setPi(u);
                 queue.add(v); //Enque
-                runnerDistances.add(v.getDist());
             }
             else if(v.getCell() == 'o') {
                 v.setDist(Integer.MAX_VALUE);
@@ -108,13 +106,13 @@ public class MazePair {
                 }
                 v.setPi(u);
                 queue.add(v); //Enque
-                ballDistances.add(v.getDist());
             }
 
 
         }
         return queue;
     }
+
 
     public void printGraph(int height, int width, Vertex[][] graph) {
         System.out.println();
