@@ -17,8 +17,6 @@ public class MazePair {
 
         shortestPath = Integer.MAX_VALUE;
 
-        // Implement your path-finding algorithm here!
-
         //Initialize
         for(int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -26,8 +24,7 @@ public class MazePair {
             }
         }
 
-        //Initialize source
-        printGraph(height, width, graph);
+        //Initialize multiple sources
 
         for(int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -39,7 +36,7 @@ public class MazePair {
 
             }
         }
-        //Replace the part below "Initialize source" with the following code if there is only one source.
+        //Replace the part below "Initialize multiple sources" with the following code if there is only one source.
         /*
         graph[1][1] = new Vertex("Gray", Integer.MAX_VALUE, null, maze[1][1], 1, 1);
         graph[1][1].setDist(0);
